@@ -8,7 +8,6 @@ const destination = document.querySelector("#container")
 ReactDOM.render(
     <>
         <React.StrictMode>
-            <h1>Hello</h1>
             <MyApp/>
         </React.StrictMode>
     </>,

@@ -15,7 +15,7 @@ export const DataBase = (function () {
         console.log(data)
     }
     DataBaseEncapsulated.prototype.get = function (ssn) {
-        return data.find(person => person.ssn === ssn)
+        return data.find(person => person.ssn === ssn) || null
     }
 
     return DataBaseEncapsulated
