@@ -15,28 +15,40 @@ export const MyApp = () => {
     const names = ["alon church", "Haskell Carry", "stephen_cleen", "John Von Neu", "stephen_cleen"]
     console.log("before = ", names);
 
-    let myFun = () => {
-        let result = [];
-        for (let i = 0; i < names.length; i++) {
-            let n = names[i]
+    // let myFun = () => {
+    //     let result = [];
+    //     for (let i = 0; i < names.length; i++) {
+    //         let n = names[i]
+    //
+    //         if (n !== undefined && n !== null) {
+    //             let ns = n.replace(/_/, " ").split(' ')
+    //
+    //             for (let j = 0; j < ns.length; j++) {
+    //                 let p = ns[j]
+    //                 ns[j] = p.charAt(0).toUpperCase() + p.slice(1)
+    //
+    //             }
+    //             ns = ns.join(" ")
+    //             if (result.indexOf(ns) < 0) {
+    //                 result.push(ns)
+    //             }
+    //         }
+    //     }
+    //     return result.sort()
+    // }
+    // console.log("res = ", myFun());
+    ////////////// Functional Style ////////////////////////////////
+    const isValid = val => !_.isUndefined(val) && !_.isNull(val);
 
-            if (n !== undefined && n !== null) {
-                let ns = n.replace(/_/, " ").split(' ')
-
-                for (let j = 0; j < ns.length; j++) {
-                    let p = ns[j]
-                    ns[j] = p.charAt(0).toUpperCase() + p.slice(1)
-
-                }
-                ns = ns.join(" ")
-                if (result.indexOf(ns) < 0) {
-                    result.push(ns)
-                }
-            }
-        }
-        return result.sort()
-    }
-    console.log("res = ", myFun());
+    const myResult = _.chain(names)
+        .filter(isValid)
+        .map(s => s.replace(/_/, ' '))
+        .uniq()
+        .map(_.startCase)
+        .sort()
+        .value();
+    console.log("res = ", myResult)
+    // console.log(_.startCase("  MileRed"))
 
 
     return (
