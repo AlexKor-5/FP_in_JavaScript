@@ -4,48 +4,40 @@ import * as R from 'ramda'
 import * as _ from 'lodash'
 
 export const MyApp = () => {
-    // const taker = document.getElementById('taker')
-    // const curry = R.curry
-    // const run = R.compose
-    // const sum = R.sum
-    // const divide = R.divide
-    // const input = [30, 50, 10, 79]
-    // const subtract = R.subtract
-    // const multiply = R.multiply
-    // const pluck = R.pluck
 
     const persons = [
-        {id: 345, fullName: "Alexander Kor", address: {email: "", country: "US", city: "Oland"}},
-        {id: 890, fullName: "Alice Merton", address: {email: "", country: "UK", city: "London"}},
-        {id: 234, fullName: "John Abram", address: {email: "", country: "UK", city: "London"}},
-        {id: 564, fullName: "Memphice Lee", address: {email: "", country: "UKR", city: "Lviv"}}
+        {id: 345, fullName: "Alexander Kor", address: {email: "", country: "US", city: "Oland"}, birthYear: 2000},
+        {id: 890, fullName: "Alice Merton", address: {email: "", country: "UK", city: "London"}, birthYear: 1903},
+        {id: 234, fullName: "John Abram", address: {email: "", country: "UK", city: "London"}, birthYear: 1999},
+        {id: 564, fullName: "Memphice Lee", address: {email: "", country: "UKR", city: "Lviv"}, birthYear: 1903}
     ]
 
-    const result = _(persons).reduce((stat, person) => {
-        const country = person.address.country;
-        stat[country] = _.isUndefined(stat[country]) ? 1 : stat[country] + 1;
-        return stat;
-    }, {});
+    const names = ["alon church", "Haskell Carry", "stephen_cleen", "John Von Neu", "stephen_cleen"]
+    console.log("before = ", names);
 
-    console.log("result = ", result)
-    ///////////////////////////////////////////////
+    let myFun = () => {
+        let result = [];
+        for (let i = 0; i < names.length; i++) {
+            let n = names[i]
 
-    const getCountry = person => person.address.country;
+            if (n !== undefined && n !== null) {
+                let ns = n.replace(/_/, " ").split(' ')
 
-    const gatherStats = function (stat, criteria) {
-        stat[criteria] = _.isUndefined(stat[criteria]) ? 1 : stat[criteria] + 1;
-        return stat;
-    };
+                for (let j = 0; j < ns.length; j++) {
+                    let p = ns[j]
+                    ns[j] = p.charAt(0).toUpperCase() + p.slice(1)
 
-    const my_result = _(persons).map(getCountry).reduce(gatherStats, {});
-    console.log("my_result = ", my_result)
-    /////////////////////////////////////////////////
+                }
+                ns = ns.join(" ")
+                if (result.indexOf(ns) < 0) {
+                    result.push(ns)
+                }
+            }
+        }
+        return result.sort()
+    }
+    console.log("res = ", myFun());
 
-    const cityPath = ['address', 'city'];
-    const countryLens = R.lens(R.path(cityPath), R.assocPath(cityPath));
-
-    console.log(_(persons).map(R.view(countryLens)).reduce(gatherStats, {}));
-    console.log(_.groupBy(persons, R.view(countryLens)))
 
     return (
         <>

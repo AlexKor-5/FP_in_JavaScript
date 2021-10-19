@@ -37,6 +37,8 @@
     ]
   },
   "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-plugin-react": "^7.26.1",
     "ramda": "^0.27.1"
   }
 }
