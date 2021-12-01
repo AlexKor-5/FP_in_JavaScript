@@ -21,14 +21,14 @@ export const MyApp = () => {
     // console.log(addNumber(1)(2)(3))
 
 /////////////////////////////////////////////////////
-    const checkType = R.curry((typeDef, actualType) => {
-        return R.is(typeDef, actualType) ?
-            actualType :
-            new TypeError('Type mismatch. Expected [' + typeDef + '] but found [' + typeof actualType + ']');
-    });
 
-    console.log(checkType(String, "hello"));
-    console.log(checkType(Number, 546));
+    function greet(greeting, name, surname) {
+        return greeting + ' ' + name + ' ' + surname;
+    }
+
+    const sayHelloTo = _.partial(greet, 'hi');
+    const sayHelloToFred = _.partial(sayHelloTo,'Fred')
+    console.log(sayHelloToFred('Lee'));
 
 
     return (
