@@ -16,31 +16,27 @@ export const MyApp = () => {
 
     const isValid = val => !_.isUndefined(val) && !_.isNull(val);
 
+    const names = ['alonzo church', 'Haskell curry', 'stephen_kleene', 'John Von Neumann', 'stephen_kleene'];
+    console.log(names);
 
-    // const getCountry = person => person.address.country
-    // const res = persons.map(getCountry).reduce(gatherStats, {})
-    // console.log("res = ", res);
+    const new_names = _.chain(names)
+        .filter(isValid)
+        .map(s => s.replace(/_/, ' '))
+        .uniq()
+        .map(_.startCase)
+        .sort()
+        .value();
+    console.log("new_names = ", new_names);
 
-    const gatherCountryNumbers = (accum, curr, index) => {
-        const current = curr.address.country
-        const item = {name: current, count: 0}
-        accum[index] = item
-        return accum
-    }
-    const findMax = (a, c) => Math.max(a, c)
-
-    const result = persons.reduce(gatherCountryNumbers, [])
-    // console.log("last = ", result);
-
-    const gatherStats = (stat, country) => {
+    const gatherStats = function (stat, country) {
         if (!isValid(stat[country])) {
-            stat[country] = {'name': country, 'count': 0}
+            stat[country] = {'name': country, 'count': 0};
         }
-        stat[country].count++
-        return stat
-    }
+        stat[country].count++;
+        return stat;
+    };
 
-    const topCountry = _.chain(persons)
+    const new_countries = _.chain(persons)
         .filter(isValid)
         .map(_.property('address.country'))
         .reduce(gatherStats, {})
@@ -48,26 +44,10 @@ export const MyApp = () => {
         .sortBy('count')
         .reverse()
         .first()
-        .value().name
-    console.log(topCountry)
+        .value()
+        // .name;
 
-    const upperCase = value => {
-        return value.toUpperCase()
-    }
-    console.log(upperCase("string"));
-    _.mixin({"upper": upperCase})
-    console.log(_.upper("my little string"))
-
-    const arrY = [2, 4, 6, 8]
-    console.log(_.tail(arrY));
-
-
-    const arrI = [1, 2, 3, 4]
-    const sum = (arr) => {
-        if (_.isEmpty(arr)) return 0
-        return _.first(arr) + sum(_.tail(arr))
-    }
-    console.log(sum(arrI));
+    console.log("country = ", new_countries);
 
 
     return (
