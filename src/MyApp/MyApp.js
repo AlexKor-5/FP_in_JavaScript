@@ -16,38 +16,19 @@ export const MyApp = () => {
 
     const isValid = val => !_.isUndefined(val) && !_.isNull(val);
 
-    const names = ['alonzo church', 'Haskell curry', 'stephen_kleene', 'John Von Neumann', 'stephen_kleene'];
-    console.log(names);
+    const addThreeNumbers = (a, b, c) => a + b + c
+    const addNumber = R.curry(addThreeNumbers)
+    // console.log(addNumber(1)(2)(3))
 
-    const new_names = _.chain(names)
-        .filter(isValid)
-        .map(s => s.replace(/_/, ' '))
-        .uniq()
-        .map(_.startCase)
-        .sort()
-        .value();
-    console.log("new_names = ", new_names);
+/////////////////////////////////////////////////////
+    const checkType = R.curry((typeDef, actualType) => {
+        return R.is(typeDef, actualType) ?
+            actualType :
+            new TypeError('Type mismatch. Expected [' + typeDef + '] but found [' + typeof actualType + ']');
+    });
 
-    const gatherStats = function (stat, country) {
-        if (!isValid(stat[country])) {
-            stat[country] = {'name': country, 'count': 0};
-        }
-        stat[country].count++;
-        return stat;
-    };
-
-    const new_countries = _.chain(persons)
-        .filter(isValid)
-        .map(_.property('address.country'))
-        .reduce(gatherStats, {})
-        .values()
-        .sortBy('count')
-        .reverse()
-        .first()
-        .value()
-        // .name;
-
-    console.log("country = ", new_countries);
+    console.log(checkType(String, "hello"));
+    console.log(checkType(Number, 546));
 
 
     return (
