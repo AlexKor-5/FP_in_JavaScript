@@ -16,19 +16,60 @@ export const MyApp = () => {
 
     const isValid = val => !_.isUndefined(val) && !_.isNull(val);
 
-    const addThreeNumbers = (a, b, c) => a + b + c
-    const addNumber = R.curry(addThreeNumbers)
-    // console.log(addNumber(1)(2)(3))
+    const classicGreeting = (firstname, lastname) => "Hello Mr. " + firstname + " " + lastname
+    const sayGreeting = R.compose(R.toUpper, classicGreeting)
+    console.log(sayGreeting("Alexander", "Kor"));
 
-/////////////////////////////////////////////////////
+    const str = `We can only see a short distance 
+           ahead but we can see plenty there 
+           that needs to be done`;
 
-    function greet(greeting, name, surname) {
-        return greeting + ' ' + name + ' ' + surname;
-    }
+    const explode = (str) => str.split(/\s+/);
+    const count = (arr) => arr.length;
 
-    const sayHelloTo = _.partial(greet, 'hi');
-    const sayHelloToFred = _.partial(sayHelloTo,'Fred')
-    console.log(sayHelloToFred('Lee'));
+    const countWords = R.compose(count, explode);
+    console.log(countWords(str));
+
+
+    const sortByFirstItem = R.sortBy(R.prop(0));
+    const pairs = [[-1, 1], [-3, 3], [-2, 2]];
+    console.log("pairs = ", sortByFirstItem(pairs));
+
+    const alice = {
+        name: 'ALICE',
+        age: 101
+    };
+    const bob = {
+        name: 'Bob',
+        age: -10
+    };
+    const clara = {
+        name: 'clara',
+        age: 314.159
+    };
+    const people = [clara, bob, alice];
+    const mySort = R.sortBy(R.prop('name'))
+    console.log(mySort(people));
+
+    const my_person = () => ({
+        name: "Alex",
+        surname: "Kor",
+        age: 10
+    })
+
+    const getAge = R.compose(R.prop('name'), my_person)
+    console.log("getAge = ", getAge());
+///////////////////////////////////////////////
+
+    const students = ['Rosser', 'Turing', 'Kleene', 'Church'];
+    const grades = [80, 100, 90, 99];
+    const smartestStudent = R.compose(
+        R.head,
+        R.pluck(0),
+        R.reverse,
+        R.sortBy(R.prop(1)),
+        R.zip);
+    console.log(smartestStudent(students, grades));
 
 
     return (
