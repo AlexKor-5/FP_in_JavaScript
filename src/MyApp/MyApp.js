@@ -1,6 +1,6 @@
 import React from "react"
 import * as R from 'ramda'
-// import db from "./fakeDB"
+import db from "./fakeDB"
 import * as _ from 'lodash'
 
 export const MyApp = () => {
@@ -49,7 +49,48 @@ export const MyApp = () => {
 
 
     const value = two.fmap(plus3).fmap(plus10)
-    console.log(value.map(R.identity)); // -> 15
+    // console.log(value.map(R.identity)); // -> 15
+
+///////////////////////////////////////////////////////////////////////////////////////
+    const findStudent = R.curry(function (db, ssn) {
+        return wrap(db.get(ssn));
+    });
+    const getAddress = function (student) {
+        return wrap(student.fmap(R.prop('address')));
+    }
+
+    const studentAddress = R.compose(
+        getAddress,
+        findStudent(db)
+    );
+    console.log(studentAddress('444-44-4444').map(R.identity).map(R.identity));
+
+    const imp_studentAddress = ssn => {
+        const st = db.get(ssn)
+        return st.address
+    }
+
+    console.log("imp_ = ", imp_studentAddress('444-44-4444'));
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+    class Empty {
+        map(f) {
+            return this
+        }
+
+        toString() {
+            return 'Empty ()';
+        }
+    }
+
+    const empty = () => new Empty()
+
+
+    const isEven = (n) => Number.isFinite(n) && (n % 2 === 0);
+    const half = (val) => isEven(val) ? wrap(val / 2) : empty();
+    console.log(half(4));  // -> ok
+    console.log(half(3));  // -> not
 
 
     return (
