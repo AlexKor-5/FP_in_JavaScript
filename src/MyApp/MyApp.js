@@ -195,6 +195,16 @@ export const MyApp = () => {
     const address = safeFindStudent('444-44-444').map(R.prop('address'));
     console.log("address = ", address.getOrElse("Whoops"));
 
+////////////////////////
+
+    const getCountry = (student) => student
+        .map(R.prop('address'))
+        .map(R.prop('country'))
+        .getOrElse('Country does not exist!')
+
+    const country = R.compose(getCountry, safeFindStudent);
+
+    console.log("country = ", country('444-4444-656'));
 
     return (
         <>
