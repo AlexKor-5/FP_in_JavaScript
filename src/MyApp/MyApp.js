@@ -1,7 +1,7 @@
 import React from "react"
 import * as R from 'ramda'
 import db from "./fakeDB"
-// import * as _ from 'lodash'
+import * as _ from 'lodash'
 
 export const MyApp = () => {
 
@@ -198,6 +198,65 @@ export const MyApp = () => {
     console.log(findStudent('657-432-89').getOrElse('Not found!'));
     findStudent('657-432-89N').orElse(console.log)
 
+///////////////////////////////////////////////////////////////////////////////////
+
+    class IO {
+        constructor(effect) {
+            if (!_.isFunction(effect)) {
+                throw 'IO Usage: function required';
+            }
+            this.effect = effect;
+        }
+
+        static of(a) {
+            return new IO(() => a);
+        }
+
+        static from(fn) {
+            return new IO(fn);
+        }
+
+        map(fn) {
+            let self = this;
+            return new IO(function () {
+                return fn(self.effect());
+            });
+        }
+
+        chain(fn) {
+            return fn(this.effect());
+        }
+
+        run() {
+            return this.effect();
+        }
+    }
+
+    const read = function (document, selector) {
+        return () => {
+            return document.querySelector(selector).innerHTML;
+        };
+    };
+
+    const write = function (document, selector) {
+        return (val) => {
+            document.querySelector(selector).innerHTML = val;
+            return val
+        };
+    };
+
+    const readDom = _.partial(read, document);
+    const writeDom = _.partial(write, document);
+
+    const changeToStartCase =
+        IO.from(readDom('#student-name')).
+        map(_.startCase).
+        map(writeDom('#student-name'));
+
+    changeToStartCase.run()
+
+
+    // console.log(document.querySelector('#student-name').innerHTML)
 
     return (
         <>
