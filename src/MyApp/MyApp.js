@@ -215,8 +215,8 @@ export const MyApp = () => {
         return Maybe.fromNullable(value).map(f);
     });
 
-    const safeFindMyObject = R.compose(lift(f => f), findMyObject);
-    console.log(safeFindObject(db, '6785-66-656').getOrElse("Error"));
+    const safeFindMyObject = R.compose(lift(console.log), findMyObject);
+    safeFindMyObject(db, '6785-66-656')
 
     return (
         <>
