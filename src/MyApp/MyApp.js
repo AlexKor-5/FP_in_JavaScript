@@ -205,6 +205,18 @@ export const MyApp = () => {
     const country = R.compose(getCountry, safeFindStudent);
 
     console.log("country = ", country('444-4444-656'));
+///////////////////////////////
+
+    const findMyObject = R.curry((db, id) => {
+        return db.get(id);
+    });
+
+    const lift = R.curry((f, value) => {
+        return Maybe.fromNullable(value).map(f);
+    });
+
+    const safeFindMyObject = R.compose(lift(f => f), findMyObject);
+    console.log(safeFindObject(db, '6785-66-656').getOrElse("Error"));
 
     return (
         <>
