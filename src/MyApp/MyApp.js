@@ -190,13 +190,13 @@ export const MyApp = () => {
         }
     }
 
-    const safeFindObject = R.curry((db, id) => {
-        return Either.fromNullable(db.get(id));
-    });
-
-    const findStudent = safeFindObject(db);
-    console.log(findStudent('657-432-89').getOrElse('Not found!'));
-    findStudent('657-432-89N').orElse(console.log)
+    // const safeFindObject = R.curry((db, id) => {
+    //     return Either.fromNullable(db.get(id));
+    // });
+    //
+    // const findStudent = safeFindObject(db);
+    // console.log(findStudent('657-432-89').getOrElse('Not found!'));
+    // findStudent('657-432-89N').orElse(console.log)
 
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -249,14 +249,48 @@ export const MyApp = () => {
     const writeDom = _.partial(write, document);
 
     const changeToStartCase =
-        IO.from(readDom('#student-name')).
-        map(_.startCase).
-        map(writeDom('#student-name'));
+        IO.from(readDom('#student-name')).map(_.startCase).map(writeDom('#student-name'));
 
     changeToStartCase.run()
-
-
     // console.log(document.querySelector('#student-name').innerHTML)
+/////////////////////////////////////////////////////////////////////////////
+
+
+    const validLength = (len, str) => str.length === len;
+
+    const checkLengthSsn = (ssn) =>
+        validLength(9, ssn) ?
+            Either.right(ssn) :
+            Either.left('Invalid SSN')
+
+    const safeFindObject = R.curry((db, id) => {
+        const val = db.get(id)
+        return val ? Either.right(val) : Either.left('Object not found with id: ' + id)
+    });
+
+    const findStudent = safeFindObject(db);
+
+    const csv = arr => arr.join(',');
+
+    const debugLog = console.log
+    const errorLog = console.error
+
+    const trace = R.curry((msg, val) => debugLog(msg + ':' + val));
+
+    const trim = (str) => str.replace(/^\s*|\s*$/g, '');
+    const normalize = (str) => str.replace(/-/g, '');
+    const cleanInput = R.compose(normalize, trim);
+
+    const showStudent = (ssn) =>
+        Maybe.fromNullable(ssn)
+            // .map(cleanInput)
+            // .chain(checkLengthSsn)
+            .chain(findStudent)
+            .map(R.props(['ssn', 'firstname', 'lastname']))
+            .map(csv)
+            .map(console.log);
+
+    showStudent('444-44-4444').orElse(errorLog);
 
     return (
         <>
