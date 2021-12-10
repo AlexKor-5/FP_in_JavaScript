@@ -1,7 +1,7 @@
 import React from "react"
 import * as R from 'ramda'
 import db from "./fakeDB"
-import * as _ from 'lodash'
+// import * as _ from 'lodash'
 
 export const MyApp = () => {
 
@@ -14,94 +14,7 @@ export const MyApp = () => {
         {id: 890, fullName: "Robberto Capachini", address: {email: "", country: "UK", city: "London"}, birthYear: 1992}
     ]
 
-    const isValid = val => !_.isUndefined(val) && !_.isNull(val);
-
-
-    // class Wrapper {
-    //     constructor(value) {
-    //         this._value = value;
-    //     }
-    //
-    //     map(f) {
-    //         return f(this._value);
-    //     }
-    //
-    //
-    //     fmap(f) {
-    //         return new Wrapper(f(this._value));
-    //     }
-    //
-    //     toString() {
-    //         return 'Wrapper (' + this._value + ')';
-    //     }
-    // }
-    //
-    // const wrap = (val) => new Wrapper(val)
-    //
-    // const wrappedValue = wrap('Get Functional');
-    // console.log(wrappedValue.map(R.identity));
-    //
-    // const plus = R.curry((a, b) => a + b);
-    // const plus3 = plus(3);
-    // const plus10 = plus(10);
-    //
-    // const two = wrap(2);
-    //
-    //
-    // const value = two.fmap(plus3).fmap(plus10)
-    // console.log(value.map(R.identity)); // -> 15
-
-/////////////////////////// monad /////////////////////////////////////////////////////////
-
-
-    class Wrapper {
-        constructor(value) {
-            this._value = value;
-        }
-
-        static of(a) {
-            return new Wrapper(a);
-        }
-
-        map(f) {
-            return Wrapper.of(f(this._value));
-        }
-
-        join() {
-            if (!(this._value instanceof Wrapper)) {
-                return this;
-            }
-            return this._value.join();
-        }
-
-        get() {
-            return this._value
-        }
-
-        toString() {
-            return `Wrapper (${this._value})`;
-        }
-    }
-
-    const res = Wrapper.of('Hello Monads!')
-        .map(R.toUpper)
-        .map(R.identity); //-> Wrapper('HELLO MONADS!')
-    // console.log(res)
-//////////////////////
-
-    const findObject = R.curry((db, id) => {
-        return Wrapper.of(db.get(id));
-    });
-
-    const getAddress = student => {
-        return Wrapper.of(student.map(R.prop('address')));
-    };
-
-    const studentAddress = R.compose(getAddress, findObject(db));
-
-    // console.log(studentAddress('444-44-4444').join().get());
-
-//////////////////////////////////////////////////
+    // const isValid = val => !_.isUndefined(val) && !_.isNull(val);
 
     class Maybe {
         static just(a) {
@@ -186,37 +99,105 @@ export const MyApp = () => {
         }
     }
 
+//////////////////////////////////////////////////////////////////
+    class Either {
+        constructor(value) {
+            this._value = value;
+        }
+
+        get value() {
+            return this._value;
+        }
+
+        static left(a) {
+            return new Left(a);
+        }
+
+        static right(a) {
+            return new Right(a);
+        }
+
+        static fromNullable(val) {
+            return val !== null && val !== undefined ? Either.right(val) : Either.left(val);
+        }
+
+        static of(a) {
+            return Either.right(a);
+        }
+    }
+
+    class Left extends Either {
+        map(_) {
+            return this;
+        }
+
+        get value() {
+            throw new TypeError("Can't extract the value of a Left(a).");
+        }
+
+        getOrElse(other) {
+            return other;
+        }
+
+        orElse(f) {
+            return f(this._value);
+        }
+
+        chain(f) {
+            return this;
+        }
+
+        getOrElseThrow(a) {
+            throw new Error(a);
+        }
+
+        filter(f) {
+            return this;
+        }
+
+        toString() {
+            return `Either.Left(${this._value})`;
+        }
+    }
+
+    class Right extends Either {
+        map(f) {
+            return Either.of(f(this._value));
+        }
+
+        getOrElse(other) {
+            return this._value;
+        }
+
+        orElse() {
+            return this;
+        }
+
+        chain(f) {
+            return f(this._value);
+        }
+
+        getOrElseThrow(_) {
+            return this._value;
+        }
+
+        filter(f) {
+            return Either.fromNullable(f(this._value) ? this._value : null);
+        }
+
+        toString() {
+            return `Either.Right(${this._value})`;
+        }
+    }
+
     const safeFindObject = R.curry((db, id) => {
-        return Maybe.fromNullable(db.get(id));
+        return Either.fromNullable(db.get(id));
     });
 
-    const safeFindStudent = safeFindObject(db);
+    const findStudent = safeFindObject(db);
+    console.log(findStudent('657-432-89').getOrElse('Not found!'));
+    findStudent('657-432-89N').orElse(console.log)
 
-    const address = safeFindStudent('444-44-444').map(R.prop('address'));
-    console.log("address = ", address.getOrElse("Whoops"));
-
-////////////////////////
-
-    const getCountry = (student) => student
-        .map(R.prop('address'))
-        .map(R.prop('country'))
-        .getOrElse('Country does not exist!')
-
-    const country = R.compose(getCountry, safeFindStudent);
-
-    console.log("country = ", country('444-4444-656'));
-///////////////////////////////
-
-    const findMyObject = R.curry((db, id) => {
-        return db.get(id);
-    });
-
-    const lift = R.curry((f, value) => {
-        return Maybe.fromNullable(value).map(f);
-    });
-
-    const safeFindMyObject = R.compose(lift(console.log), findMyObject);
-    safeFindMyObject(db, '6785-66-656')
 
     return (
         <>
