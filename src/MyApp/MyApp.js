@@ -249,7 +249,9 @@ export const MyApp = () => {
     const writeDom = _.partial(write, document);
 
     const changeToStartCase =
-        IO.from(readDom('#student-name')).map(_.startCase).map(writeDom('#student-name'));
+        IO.from(readDom('#student-name'))
+            .map(_.startCase)
+            .map(writeDom('#student-name'));
 
     changeToStartCase.run()
     // console.log(document.querySelector('#student-name').innerHTML)
@@ -275,10 +277,8 @@ export const MyApp = () => {
     const debugLog = console.log
     const errorLog = console.error
 
-    const trace = R.curry((msg, val) => debugLog(msg + ':' + val));
-
     const trim = (str) => str.replace(/^\s*|\s*$/g, '');
-    const normalize = (str) => str.replace(/-/g, '');
+    const normalize = (str) => str.replace(/-/g, '-');
     const cleanInput = R.compose(normalize, trim);
 
     const showStudent = (ssn) =>
@@ -288,9 +288,44 @@ export const MyApp = () => {
             .chain(findStudent)
             .map(R.props(['ssn', 'firstname', 'lastname']))
             .map(csv)
-            .map(console.log);
+    // .map(console.log);
 
     showStudent('444-44-4444').orElse(errorLog);
+/////////////////////////////////////////////////////////////////////
+
+    const map = R.curry((f, container) => {
+        return container.map(f);
+    });
+
+    const chain = R.curry((f, container) => {
+        return container.chain(f);
+    });
+
+    const lift = R.curry((f, value) => {
+        return Maybe.fromNullable(value).map(f);
+    });
+
+    const trace = R.curry((msg, val) => debugLog(msg + ':' + val));
+
+    const append = R.curry((elementId, info) => {
+        document.querySelector(elementId).innerHTML = info;
+        return info;
+    });
+
+    const liftIO = val => IO.of(val)
+
+    const showMyStudent = R.compose(
+        map(append('#student-name')),
+        liftIO,
+        map(csv),
+        map(R.props(['ssn', 'firstname', 'lastname'])),
+        R.tap(trace('Record fetched successfully!')),
+        chain(findStudent),
+        R.tap(trace('Input was valid')),
+        lift(cleanInput)
+    );
+    showMyStudent('444-44-4444').run()
+
 
     return (
         <>
